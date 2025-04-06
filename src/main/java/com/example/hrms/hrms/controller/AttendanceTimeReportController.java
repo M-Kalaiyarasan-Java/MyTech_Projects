@@ -44,66 +44,94 @@ public class AttendanceTimeReportController {
     }
 
     @GetMapping("/hrms_attendance_time_report")
-    public ResponseEntity<Map<String, Object>> getAttendanceTimeReport(
-            @RequestParam String current_month,
-            @RequestParam String year) {
+    public ResponseEntity<?> getAttendanceTimeReport(
+            @RequestParam(required = false) String current_month,
+            @RequestParam(required = false) String year) {
+        try {
+            if (current_month == null || year == null || year.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Both 'current_month' and 'year' are required."));
+            }
 
-        String monthValue = convertMonth(current_month);
+            String monthValue = convertMonth(current_month);
+            logger.info("Fetching attendance report for month: {} and year: {}", monthValue, year);
 
-        logger.info("Fetching attendance report for month: {} and year: {}", monthValue, year);
-
-        List<AttendanceReportDTO> data = attendanceTimeReportService.getAttendanceReport(monthValue, year);
-        Map<String, Object> response = Map.of("data", data);
-        return ResponseEntity.ok(response);
+            List<AttendanceReportDTO> data = attendanceTimeReportService.getAttendanceReport(monthValue, year);
+            return ResponseEntity.ok(Map.of("data", data));
+        } catch (IllegalArgumentException e) {
+            logger.warn("Invalid month parameter: {}", current_month);
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error fetching attendance report", e);
+            return ResponseEntity.internalServerError().body(Map.of("error", "Internal server error"));
+        }
     }
 
     @PostMapping("/hrms_store_attendance_muster")
-    public ResponseEntity<Map<String, String>> updateMusterDetails(
-            @RequestBody Map<String, String> params) {
+    public ResponseEntity<?> updateMusterDetails(@RequestBody Map<String, String> params) {
+        try {
+            String currentMonth = params.get("current_month");
+            String year = params.get("year");
 
-        String monthValue = convertMonth(params.get("current_month"));
-        String year = params.get("year");
+            if (currentMonth == null || year == null || currentMonth.trim().isEmpty() || year.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Both 'current_month' and 'year' are required."));
+            }
 
-        logger.info("Syncing attendance data for month: {} and year: {}", monthValue, year);
+            String monthValue = convertMonth(currentMonth);
+            logger.info("Syncing attendance data for month: {} and year: {}", monthValue, year);
+            attendanceTimeReportService.syncAttendanceData(monthValue, year);
 
-        attendanceTimeReportService.syncAttendanceData(monthValue, year);
-
-        return ResponseEntity.ok(Map.of("message", "Attendance data synchronized successfully"));
+            return ResponseEntity.ok(Map.of("message", "Attendance data synchronized successfully"));
+        } catch (IllegalArgumentException e) {
+            logger.warn("Invalid request parameters: {}", params);
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error syncing attendance data", e);
+            return ResponseEntity.internalServerError().body(Map.of("error", "Internal server error"));
+        }
     }
 
     @PostMapping("/generate_excel")
-    public ResponseEntity<Resource> generateExcel(@RequestBody ExcelGenerationRequest request) {
-        String monthValue = convertMonth(request.getMonth());
+    public ResponseEntity<?> generateExcel(@RequestBody ExcelGenerationRequest request) {
+        try {
+            if (request.getMonth() == null || request.getYear() == null ||
+                    request.getMonth().trim().isEmpty() || request.getYear().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Both 'month' and 'year' are required."));
+            }
 
-        logger.info("Generating Excel report for month: {} and year: {}", monthValue, request.getYear());
+            String monthValue = convertMonth(request.getMonth());
+            logger.info("Generating Excel report for month: {} and year: {}", monthValue, request.getYear());
 
-        Resource excelResource = attendanceTimeReportService.generateExcelReport(
-                request.getDataset(),
-                monthValue,
-                request.getYear()
-        );
+            Resource excelResource = attendanceTimeReportService.generateExcelReport(
+                    request.getDataset(),
+                    monthValue,
+                    request.getYear()
+            );
 
-        String filename = "Attendance_Report_" + request.getYear() + "_" + monthValue + ".xlsx";
+            String filename = "Attendance_Report_" + request.getYear() + "_" + monthValue + ".xlsx";
 
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                .body(excelResource);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                    .body(excelResource);
+        } catch (IllegalArgumentException e) {
+            logger.warn("Invalid month parameter: {}", request.getMonth());
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error generating Excel report", e);
+            return ResponseEntity.internalServerError().body(Map.of("error", "Internal server error"));
+        }
     }
 
     private String convertMonth(String month) {
         if (month == null || month.trim().isEmpty()) {
-            throw new IllegalArgumentException("Month parameter is required");
+            throw new IllegalArgumentException("Month parameter is required.");
         }
 
-        String formattedMonth = month.toLowerCase().trim();
-        
+        String formattedMonth = month.trim().toLowerCase();
         if (MONTH_MAP.containsKey(formattedMonth)) {
-            return MONTH_MAP.get(formattedMonth);  // Convert full month name to number with leading zero
+            return MONTH_MAP.get(formattedMonth);
         } else if (formattedMonth.matches("^(0?[1-9]|1[0-2])$")) {
-            // Ensure two-digit format (with leading zero) for months 1-9
-            int monthNum = Integer.parseInt(formattedMonth);
-            return String.format("%02d", monthNum);
+            return String.format("%02d", Integer.parseInt(formattedMonth)); // Ensures two-digit format
         } else {
             throw new IllegalArgumentException("Invalid month: " + month);
         }
