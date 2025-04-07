@@ -1,34 +1,10 @@
-version: "1.0"
-application:
-  name: HRMS
-  description: Human Resource Management System
-  version: 1.0.0
-
-server:
-  port: 8080
-  contextPath: /api
-
-database:
-  type: postgresql
-  host: ep-summer-sea-a1vhqzwi-pooler.ap-southeast-1.aws.neon.tech
-  port: 5432
-  name: hrms_db
-  username: neondb_owner
-  password: npg_bMG5O2cHiJsu
-  sslmode: require
-
-logging:
-  level: INFO
-  file: logs/hrms.log
-
-security:
-  enable: true
-  jwt:
-    secret: your_jwt_secret
-    expiration: 3600
-
-features:
-  - user-management
-  - employee-tracking
-  - payroll
-  - attendance
+services:
+  - type: web
+    name: hrms-app
+    env: java
+    plan: free
+    buildCommand: "./mvnw clean package"  # or ./gradlew build
+    startCommand: "java -jar target/hrms-0.0.1-SNAPSHOT.jar"
+    envVars:
+      - key: PORT
+        value: 8080
