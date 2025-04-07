@@ -69,4 +69,6 @@ public class UserController {
     public Department getdDepartment(@PathVariable long id) {
         return dep.findById(id).orElse(null);
     }
+
+
 } 
