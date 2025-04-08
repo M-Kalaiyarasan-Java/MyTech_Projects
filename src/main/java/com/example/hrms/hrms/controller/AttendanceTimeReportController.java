@@ -16,7 +16,7 @@ import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@CrossOrigin("*")
+// @CrossOrigin("*")
 @RestController
 @RequestMapping("/api")
 public class AttendanceTimeReportController {
