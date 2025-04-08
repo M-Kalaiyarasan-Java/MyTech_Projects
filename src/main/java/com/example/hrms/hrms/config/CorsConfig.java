@@ -10,11 +10,12 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("*") // React frontend URL
+                .allowedOriginPatterns("*") // ✅ Works with allowCredentials
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(true);
+                .allowCredentials(true); // ✅ Now valid
     }
 }
+
 
 

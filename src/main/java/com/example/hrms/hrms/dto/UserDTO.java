@@ -1,20 +1,20 @@
-package com.example.hrms.hrms.dto;
+// package com.example.hrms.hrms.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+// import lombok.AllArgsConstructor;
+// import lombok.Getter;
+// import lombok.NoArgsConstructor;
+// import lombok.Setter;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-public class UserDTO {
-    private String name;
-    private String email;
-    private String loginId;
-    private String password;
+// @AllArgsConstructor
+// @NoArgsConstructor
+// @Getter
+// @Setter
+// public class UserDTO {
+//     private String name;
+//     private String email;
+//     private String loginId;
+//     private String password;
 
-    // Constructors, Getters & Setters
-}
+//     // Constructors, Getters & Setters
+// }
 
