@@ -18,7 +18,7 @@ import com.example.hrms.hrms.model.Department;
 import com.example.hrms.hrms.model.Developers;
 import com.example.hrms.hrms.repo.DevRepositroy;
 
-@CrossOrigin("*")
+// @CrossOrigin("*")
 @RestController
 @RequestMapping("/api/")
 public class DevController {
