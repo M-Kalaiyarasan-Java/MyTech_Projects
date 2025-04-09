@@ -13,7 +13,10 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("https://hrms-app-n5k5.onrender.com")
+                        .allowedOriginPatterns(
+                            "http://localhost:*", 
+                            "https://hrms-app-n5k5.onrender.com"
+                        )
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowCredentials(true);
             }
