@@ -1,6 +1,7 @@
 package com.example.hrms.hrms.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.hrms.hrms.model.Department;
 import com.example.hrms.hrms.model.Developers;
+import com.example.hrms.hrms.repo.DepartmentRepository;
 import com.example.hrms.hrms.repo.DevRepositroy;
 
 // @CrossOrigin("*")
@@ -25,6 +27,9 @@ public class DevController {
 
     @Autowired
     private DevRepositroy rep;
+
+    @Autowired
+    private DepartmentRepository dep;
 
     // Add your methods here to handle requests related to developersp
     @PostMapping("/add_user")
@@ -42,6 +47,23 @@ public class DevController {
         return rep.findAll();
     }
 
+    @GetMapping("/get")
+   public List<Department> getall(){
+    return dep.findAll();
+   }
+
+    @GetMapping("/get_department/{id}")
+    public Department getDepartments(@PathVariable Long id) {
+        
+        Optional<Department> department = dep.findById(id);
+
+        if(department.isPresent()){
+            return department.get();
+        }
+
+        return null;
+
+    }
      @GetMapping("/developer-name")
     public ResponseEntity<String> getManagerName(@RequestParam String employeeName) {
         String managerName = rep.findReportingManagerName(employeeName);
