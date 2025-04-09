@@ -42,8 +42,8 @@ public class Developers {
     private String mobile_no;
     private String designation;
 
-    private Integer department_name; // assuming it's an ID
-    private Integer reporting_to; // assuming it's an ID
+    private Long department_name; // assuming it's an ID
+    private Long reporting_to; // assuming it's an ID
 
     private Boolean active = true;
     private Integer createdBy;
