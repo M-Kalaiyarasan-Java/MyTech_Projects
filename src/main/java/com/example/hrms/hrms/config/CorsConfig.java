@@ -15,7 +15,8 @@ public class CorsConfig {
                 registry.addMapping("/**")
                         .allowedOriginPatterns(
                             "http://localhost:*", 
-                            "https://hrms-app-n5k5.onrender.com"
+                            "https://hrms-app-n5k5.onrender.com",
+                            "https://mytectalik-projects.web.app"
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowCredentials(true);
