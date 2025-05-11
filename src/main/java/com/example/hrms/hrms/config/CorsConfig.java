@@ -14,10 +14,9 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOriginPatterns(
-                            "http://localhost:*", 
-                            "https://hrms-app-n5k5.onrender.com",
-                            "https://mytectalik-projects.web.app"
-                        )
+                                "http://localhost:*",
+                                "https://hrms-app-n5k5.onrender.com",
+                                "https://myreact-springboot.web.app")
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowCredentials(true);
             }
